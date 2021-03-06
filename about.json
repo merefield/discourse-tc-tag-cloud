@@ -1,0 +1,9 @@
+{
+  "name": "Tag Cloud",
+  "about_url": "",
+  "component": true,
+  "authors": "Robert Barrow",
+  "assets": {
+    "jqcloud": "assets/jqcloud.js"
+  }
+}
