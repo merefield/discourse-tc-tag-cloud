@@ -29,7 +29,7 @@ export default Ember.Component.extend({
     this.words.sort(compare);
 
     this.words.map((word) => {
-      word.size = Math.log(word.count + 1) * 30;
+      word.size = Math.log(word.count + 1.75) * 30;
       word.href = `/tag/${word.text}`;
       return word;
     });
@@ -39,7 +39,7 @@ export default Ember.Component.extend({
     this.ensureD3().then(() => {
       var layout = d3.layout
         .cloud()
-        .size([1120, 300])
+        .size([settings.tag_cloud_width, settings.tag_cloud_height])
         .words(_this.words)
         .padding(5)
         .rotate(function () {
@@ -75,7 +75,7 @@ export default Ember.Component.extend({
             return d.size + "px";
           })
           .style("fill", function () {
-            return "hsl(" + Math.random() * 360 + ",40%,40%)";
+            return `hsl(${Math.random() * 360},${settings.tag_cloud_color_saturation}%,${settings.tag_cloud_color_lightness}%)`
           })
           .style("font-family", "Impact")
           .attr("text-anchor", "middle")

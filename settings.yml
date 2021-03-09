@@ -6,14 +6,6 @@ tag_cloud_height:
   default: 400
   description:
     en: "Tag Cloud Height"
-tag_cloud_shape:
-  default: 'elliptic'
-  description:
-    en: "Tag Cloud Shape (either 'elliptic' or 'rectangular' - latter appears to not be very optimised for available space)"
-tag_cloud_steps:
-  default: 10
-  description:
-    en: "Number of different sizes & colors (doesn't appear to be very good at large numbers)"
 tag_cloud_color_saturation:
   default: 40
   description:
@@ -22,11 +14,3 @@ tag_cloud_color_lightness:
   default: 40
   description:
     en: "Percentage lightness for cloud words colours"
-tag_cloud_relative_fontsize_from:
-  default: 0.1
-  description:
-    en: "Relative size of largest word"
-tag_cloud_relative_fontsize_to:
-  default: 0.01
-  description:
-    en: "Relative size of smallest word"
