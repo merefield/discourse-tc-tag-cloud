@@ -4,6 +4,8 @@
   "component": true,
   "authors": "Robert Barrow",
   "assets": {
-    "jqcloud": "assets/jqcloud.js"
+    "jqcloud": "assets/jqcloud.js",
+    "d3Cloud": "assets/d3.layout.cloud.js",
+    "d3Lib": "assets/d3.min.js"
   }
 }
