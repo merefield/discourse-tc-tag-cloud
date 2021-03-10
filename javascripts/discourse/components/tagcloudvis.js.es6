@@ -12,7 +12,9 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    this.setup();
+    if (!this.site.mobileView) {
+      this.setup();
+    }
   },
 
   setup() {
@@ -75,7 +77,9 @@ export default Ember.Component.extend({
             return d.size + "px";
           })
           .style("fill", function () {
-            return `hsl(${Math.random() * 360},${settings.tag_cloud_color_saturation}%,${settings.tag_cloud_color_lightness}%)`
+            return `hsl(${
+              Math.random() * 360
+            },${settings.tag_cloud_color_saturation}%,${settings.tag_cloud_color_lightness}%)`;
           })
           .style("font-family", "Impact")
           .attr("text-anchor", "middle")
