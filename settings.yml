@@ -6,6 +6,16 @@ tag_cloud_height:
   default: 400
   description:
     en: "Tag Cloud Height"
+tag_cloud_include_on_front_page:
+  type: bool
+  default: false
+  description:
+    en: "Include tag cloud on homepage"
+tag_cloud_animate_mouse_over:
+  type: bool
+  default: true
+  description:
+    en: "Animate words on mouse over"
 tag_cloud_color_saturation:
   default: 40
   description:

@@ -1,9 +1,12 @@
 import loadScript from "discourse/lib/load-script";
 import DiscourseURL from "discourse/lib/url";
+import { notEmpty } from "@ember/object/computed";
+import { observes } from 'discourse-common/utils/decorators';
 
 export default Ember.Component.extend({
   classNames: "tag-cloud-vis",
-  words: Ember.computed.alias("model.content"),
+  words: Ember.computed.alias("tags"),
+  hasItems: notEmpty("tags"),
 
   ensureD3() {
     return loadScript(settings.theme_uploads.d3Lib).then(() => {
@@ -13,6 +16,15 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     if (!this.site.mobileView) {
+      this.waitForData() 
+    }
+  },
+
+  @observes("hasItems")
+  waitForData() {
+    if(!this.hasItems) {
+      return;
+    } else {
       this.setup();
     }
   },
@@ -86,28 +98,32 @@ export default Ember.Component.extend({
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
           })
           .on("mouseover", function (d, i) {
-            let newFontSize =
-              parseInt(d3.select(this).style("font-size")) * 1.1 + "px";
-            d3.select(this)
-              .transition()
-              .duration(100)
-              .style("cursor", "pointer")
-              .style("font-size", newFontSize)
-              .style("fill", function () {
-                return d3.rgb(d3.select(this).style("fill")).darker(-0.7);
-              });
+            if (settings.tag_cloud_animate_mouse_over) {
+              let newFontSize =
+                parseInt(d3.select(this).style("font-size")) * 1.1 + "px";
+              d3.select(this)
+                .transition()
+                .duration(100)
+                .style("cursor", "pointer")
+                .style("font-size", newFontSize)
+                .style("fill", function () {
+                  return d3.rgb(d3.select(this).style("fill")).darker(-0.7);
+                });
+            }
           })
           .on("mouseout", function (d, i) {
-            let newFontSize =
-              parseInt(d3.select(this).style("font-size")) / 1.1 + "px";
-            d3.select(this)
-              .transition()
-              .duration(100)
-              .style("cursor", "default")
-              .style("font-size", newFontSize)
-              .style("fill", function () {
-                return d3.rgb(d3.select(this).style("fill")).darker(0.7);
-              });
+            if (settings.tag_cloud_animate_mouse_over) {
+              let newFontSize =
+                parseInt(d3.select(this).style("font-size")) / 1.1 + "px";
+              d3.select(this)
+                .transition()
+                .duration(100)
+                .style("cursor", "default")
+                .style("font-size", newFontSize)
+                .style("fill", function () {
+                  return d3.rgb(d3.select(this).style("fill")).darker(0.7);
+                });
+            }
           })
           .on("click", function (d, i) {
             if (d.target.__data__.href) {
