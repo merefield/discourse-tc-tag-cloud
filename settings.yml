@@ -6,6 +6,10 @@ tag_cloud_height:
   default: 400
   description:
     en: "Tag Cloud Height"
+tag_cloud_word_scale:
+  default: 30
+  description:
+    en: "Tag Cloud Scale"
 tag_cloud_include_on_front_page:
   type: bool
   default: false

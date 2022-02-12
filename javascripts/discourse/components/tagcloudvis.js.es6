@@ -43,7 +43,7 @@ export default Ember.Component.extend({
     this.words.sort(compare);
 
     this.words.map((word) => {
-      word.size = Math.log(word.count + 1.75) * 30;
+      word.size = Math.log(word.count + 1.75) * settings.tag_cloud_word_scale;
       word.href = `/tag/${word.text}`;
       return word;
     });
