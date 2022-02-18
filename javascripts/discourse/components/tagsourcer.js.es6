@@ -5,6 +5,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 export default Component.extend({
   tagName: "",
   tags: "",
+  extras: "",
   isLoading: true,
 
   init() {
@@ -12,6 +13,7 @@ export default Component.extend({
 
     ajax(`/tags.json`).then((tags) => {
       this.set("tags", tags.tags);
+      this.set("extras", tags.extras);
       this.set("isLoading", false);
     });
   },

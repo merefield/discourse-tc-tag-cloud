@@ -40,6 +40,15 @@ export default Ember.Component.extend({
       return 0;
     }
 
+    if (this.siteSettings.tags_listed_by_group) {
+      let tagGroups = this.extras.tag_groups
+      tagGroups.forEach((tagGroup) => {
+        tagGroup.tags.forEach((extraTag) => {
+          this.words.push(extraTag)
+        })
+      })
+    }
+
     this.words.sort(compare);
 
     this.words.map((word) => {
