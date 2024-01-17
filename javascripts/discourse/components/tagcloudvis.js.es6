@@ -1,11 +1,12 @@
 import loadScript from "discourse/lib/load-script";
 import DiscourseURL from "discourse/lib/url";
-import { notEmpty } from "@ember/object/computed";
+import { alias, notEmpty } from "@ember/object/computed";
+import Component from "@ember/component";
 import { observes } from 'discourse-common/utils/decorators';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: "tag-cloud-vis",
-  words: Ember.computed.alias("tags"),
+  words: alias("tags"),
   hasItems: notEmpty("tags"),
 
   ensureD3() {
