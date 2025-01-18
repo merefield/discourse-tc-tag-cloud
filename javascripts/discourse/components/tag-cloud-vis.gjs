@@ -1,36 +1,23 @@
+import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
+import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
+import { service } from "@ember/service";
 import loadScript from "discourse/lib/load-script";
 import DiscourseURL from "discourse/lib/url";
-import { alias, notEmpty } from "@ember/object/computed";
-import Component from "@ember/component";
-import { observes } from 'discourse-common/utils/decorators';
 
-export default Component.extend({
-  classNames: "tag-cloud-vis",
-  words: alias("tags"),
-  hasItems: notEmpty("tags"),
+export default class TagCloudVis extends Component {
+  @service siteSettings;
+  @tracked words = [];
 
-  ensureD3() {
-    return loadScript(settings.theme_uploads.d3Lib).then(() => {
-      return loadScript(settings.theme_uploads.d3Cloud);
-    });
-  },
+  async ensureD3() {
+    await loadScript(settings.theme_uploads.d3Lib);
+    return loadScript(settings.theme_uploads.d3Cloud);
+  }
 
-  didInsertElement() {
-    if (!this.site.mobileView) {
-      this.waitForData() 
-    }
-  },
-
-  @observes("hasItems")
-  waitForData() {
-    if(!this.hasItems) {
-      return;
-    } else {
-      this.setup();
-    }
-  },
-
-  setup() {
+  @action
+  draw() {
     function compare(a, b) {
       if (a.count < b.count) {
         return -1;
@@ -41,13 +28,19 @@ export default Component.extend({
       return 0;
     }
 
+    if (!this.args.tags) {
+      return;
+    }
+
+    this.words = this.args.tags;
+
     if (this.siteSettings.tags_listed_by_group) {
-      let tagGroups = this.extras.tag_groups
+      let tagGroups = this.args.extras.tag_groups;
       tagGroups.forEach((tagGroup) => {
         tagGroup.tags.forEach((extraTag) => {
-          this.words.push(extraTag)
-        })
-      })
+          this.words.push(extraTag);
+        });
+      });
     }
 
     this.words.sort(compare);
@@ -58,10 +51,10 @@ export default Component.extend({
       return word;
     });
 
-    var _this = this;
+    let _this = this;
 
     this.ensureD3().then(() => {
-      var layout = d3.layout
+      let layout = window.d3.layout
         .cloud()
         .size([settings.tag_cloud_width, settings.tag_cloud_height])
         .words(_this.words)
@@ -78,7 +71,8 @@ export default Component.extend({
       layout.start();
 
       function draw(words) {
-        d3.select(".tag-cloud-vis")
+        window.d3
+          .select(".tag-cloud-vis")
           .append("svg")
           .attr("viewBox", `0 0 ${layout.size()[0]} ${layout.size()[1]}`)
           .append("g")
@@ -107,35 +101,43 @@ export default Component.extend({
           .attr("transform", function (d) {
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
           })
-          .on("mouseover", function (d, i) {
+          .on("mouseover", function () {
             if (settings.tag_cloud_animate_mouse_over) {
               let newFontSize =
-                parseInt(d3.select(this).style("font-size")) * 1.1 + "px";
-              d3.select(this)
+                parseInt(window.d3.select(this).style("font-size"), 10) * 1.1 +
+                "px";
+              window.d3
+                .select(this)
                 .transition()
                 .duration(100)
                 .style("cursor", "pointer")
                 .style("font-size", newFontSize)
                 .style("fill", function () {
-                  return d3.rgb(d3.select(this).style("fill")).darker(-0.7);
+                  return window.d3
+                    .rgb(window.d3.select(this).style("fill"))
+                    .darker(-0.7);
                 });
             }
           })
-          .on("mouseout", function (d, i) {
+          .on("mouseout", function () {
             if (settings.tag_cloud_animate_mouse_over) {
               let newFontSize =
-                parseInt(d3.select(this).style("font-size")) / 1.1 + "px";
-              d3.select(this)
+                parseInt(window.d3.select(this).style("font-size"), 10) / 1.1 +
+                "px";
+              window.d3
+                .select(this)
                 .transition()
                 .duration(100)
                 .style("cursor", "default")
                 .style("font-size", newFontSize)
                 .style("fill", function () {
-                  return d3.rgb(d3.select(this).style("fill")).darker(0.7);
+                  return window.d3
+                    .rgb(window.d3.select(this).style("fill"))
+                    .darker(0.7);
                 });
             }
           })
-          .on("click", function (d, i) {
+          .on("click", function (d) {
             if (d.target.__data__.href) {
               DiscourseURL.routeTo(d.target.__data__.href);
             }
@@ -145,5 +147,13 @@ export default Component.extend({
           });
       }
     });
-  },
-});
+  }
+
+  <template>
+    <div
+      {{didInsert this.draw @tags}}
+      {{didUpdate this.draw @tags}}
+      class="tag-cloud-vis"
+    ></div>
+  </template>
+}
